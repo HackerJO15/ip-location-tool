@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My IP Location Tool</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f9; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 400px; width: 100%; }
+        h2 { color: #333; margin-top: 0; }
+        .info { margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        strong { color: #555; }
+        #map { width: 100%; height: 250px; background-color: #e5e3df; border-radius: 8px; margin-top: 15px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        img { width: 100%; height: 100%; object-fit: cover; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>Connection Details</h2>
+        <div id="details">
+            <p>Gathering data...</p>
+        </div>
+        <div id="map">
+            <p style="color: #888; font-size: 0.9em;">Map will load here</p>
+        </div>
+    </div>
+
+    <script>
+        // 1. Fetch the IP and Location data
+        fetch('https://ipapi.co/json/')
+            .then(response => response.json())
+            .then(data => {
+                // 2. Display the text info
+                document.getElementById('details').innerHTML = `
+                    <div class="info"><strong>IP Address:</strong> ${data.ip}</div>
+                    <div class="info"><strong>Location:</strong> ${data.city}, ${data.region}, ${data.country_name}</div>
+                    <div class="info"><strong>ISP:</strong> ${data.org}</div>
+                `;
+
+                // 3. Setup the Map (Requires a Google API Key)
+                // Replace 'YOUR_GOOGLE_API_KEY' with your actual key to see the map
+                const apiKey = 'YOUR_GOOGLE_API_KEY'; 
+                const lat = data.latitude;
+                const lon = data.longitude;
+                
+                if (apiKey !== 'YOUR_GOOGLE_API_KEY') {
+                    const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lon}&zoom=12&size=400x400&markers=color:red|${lat},${lon}&key=${apiKey}`;
+                    document.getElementById('map').innerHTML = `<img src="${mapUrl}" alt="Map Location">`;
+                }
+            })
+            .catch(err => {
+                document.getElementById('details').innerHTML = "<p>Error loading data. Check your connection.</p>";
+            });
+    </script>
+
+</body>
+</html>
